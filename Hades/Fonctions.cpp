@@ -1,6 +1,8 @@
 #include "Fonctions.h"
 #include <stdio.h>
 #include <tchar.h>
+#include <unordered_map>
+#include <string>
 
 DWORD GetProcessID(const wchar_t* processName) {
 	return 0;
@@ -35,4 +37,17 @@ uintptr_t FindDMAAddy(HANDLE hprocess, uintptr_t ptr, std::vector<unsigned int> 
 		addr += offset[i];
 	}
 	return addr;
+}
+
+std::unordered_map<std::string, uintptr_t> Initialization(HANDLE hProcess, uintptr_t baseAddress, const std::unordered_map<std::string, std::vector<unsigned int>>& allOffsets) {
+	std::unordered_map<std::string, uintptr_t> results;
+
+	for (const auto& pair : allOffsets) {
+		const std::string& key = pair.first;
+		const std::vector<unsigned int>& offsets = pair.second;
+		uintptr_t result = FindDMAAddy(hProcess, baseAddress, offsets);
+		results[key] = result;
+	}
+
+	return results;
 }
